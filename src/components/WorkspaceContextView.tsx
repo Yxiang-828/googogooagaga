@@ -13,12 +13,12 @@ const SURFACES: { id: AppSurface; label: string; icon: React.ElementType }[] = [
   { id: 'call', label: 'Call', icon: Phone },
 ];
 
-export function WorkspaceContextView({ channelLabel }: { channelLabel: string }) {
+export function WorkspaceContextView({ channelLabel, onMenuToggle, onOpenThread }: { channelLabel: string, onMenuToggle?: () => void, onOpenThread?: (threadId: string) => void }) {
   const [activeSurface, setActiveSurface] = useState<AppSurface>('feed');
 
   const renderContent = () => {
     switch (activeSurface) {
-      case 'feed': return <CenterFeed activeChannel={channelLabel} />;
+      case 'feed': return <CenterFeed activeChannel={channelLabel} onOpenThread={onOpenThread} />;
       case 'build': return <CodespaceView />;
       case 'review': return (
          <div className="flex-1 p-8 text-[var(--center-channel-color)] flex flex-col h-full bg-[var(--center-channel-bg)]">
@@ -49,12 +49,12 @@ export function WorkspaceContextView({ channelLabel }: { channelLabel: string })
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-[var(--center-channel-bg)] text-[var(--center-channel-color)]">
-      <div className="h-12 shrink-0 border-b border-[color:rgba(var(--center-channel-color-rgb),0.12)] flex items-center justify-between px-4 bg-[color:rgba(var(--center-channel-color-rgb),0.02)]">
-        <div className="flex items-center">
-            <Hash className="w-5 h-5 mr-2 opacity-70" />
-            <span className="font-semibold mr-6">{channelLabel}</span>
-            <div className="flex items-end h-full mt-2">
+    <div className="flex-1 flex flex-col h-full bg-[var(--center-channel-bg)] text-[var(--center-channel-color)] min-w-0">
+      <div className="h-auto md:h-12 shrink-0 border-b border-[color:rgba(var(--center-channel-color-rgb),0.12)] flex flex-col md:flex-row items-start md:items-center justify-between px-4 bg-[color:rgba(var(--center-channel-color-rgb),0.02)]">
+        <div className="flex items-center w-full overflow-x-auto no-scrollbar-y">
+            <Hash className="w-5 h-5 mr-2 opacity-70 shrink-0" />
+            <span className="font-semibold mr-6 shrink-0">{channelLabel}</span>
+            <div className="flex items-end h-full mt-2 md:mt-0 min-w-max">
             {SURFACES.map((surface) => {
                 const isActive = activeSurface === surface.id;
                 const Icon = surface.icon;
@@ -76,7 +76,7 @@ export function WorkspaceContextView({ channelLabel }: { channelLabel: string })
             </div>
         </div>
         
-        <div className="flex items-center text-xs border border-[color:rgba(var(--center-channel-color-rgb),0.12)] rounded bg-[color:rgba(var(--center-channel-color-rgb),0.04)] px-2 py-1">
+        <div className="flex items-center text-xs border border-[color:rgba(var(--center-channel-color-rgb),0.12)] rounded bg-[color:rgba(var(--center-channel-color-rgb),0.04)] px-2 py-1 mt-2 mb-2 md:mt-0 md:mb-0 ml-auto md:ml-0 shrink-0">
              Codespace bound: <span className="font-mono ml-1 opacity-80">web-app</span>
         </div>
       </div>

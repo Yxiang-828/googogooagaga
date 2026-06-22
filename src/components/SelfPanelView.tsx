@@ -22,17 +22,17 @@ export function SelfPanelView({ onClose }: { onClose?: () => void }) {
         {/* Main Agent Card */}
         <div className="bg-[color:rgba(var(--center-channel-color-rgb),0.02)] border border-[color:rgba(var(--center-channel-color-rgb),0.12)] rounded-xl p-5 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 left-0 w-1 h-full bg-[var(--link-color)]"></div>
-          <div className="flex items-center justify-between mb-4 border-b border-[color:rgba(var(--center-channel-color-rgb),0.1)] pb-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 border-b border-[color:rgba(var(--center-channel-color-rgb),0.1)] pb-4 gap-4 sm:gap-0">
             <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 rounded-full bg-[color:rgba(var(--link-color-rgb,22,109,224),0.1)] flex items-center justify-center text-[var(--link-color)] font-bold text-lg border border-[color:rgba(var(--link-color-rgb,22,109,224),0.2)] shadow-sm">
+              <div className="w-10 h-10 rounded-full bg-[color:rgba(var(--link-color-rgb,22,109,224),0.1)] flex items-center justify-center text-[var(--link-color)] font-bold text-lg border border-[color:rgba(var(--link-color-rgb,22,109,224),0.2)] shadow-sm shrink-0">
                 A
               </div>
-              <div>
-                <div className="font-semibold text-lg flex items-center">@agy <span className="opacity-50 text-sm font-normal ml-2 bg-[color:rgba(var(--center-channel-color-rgb),0.04)] px-1.5 py-0.5 rounded">Primary Agent</span></div>
-                <div className="text-xs font-mono text-[var(--link-color)] mt-0.5 tracking-wide bg-[color:rgba(var(--link-color-rgb,22,109,224),0.05)] inline-block px-1 rounded">local-cli · gemini-3.1-pro</div>
+              <div className="min-w-0">
+                <div className="font-semibold text-lg flex items-center flex-wrap gap-1">@agy <span className="opacity-50 text-sm font-normal bg-[color:rgba(var(--center-channel-color-rgb),0.04)] px-1.5 py-0.5 rounded">Primary Agent</span></div>
+                <div className="text-xs font-mono text-[var(--link-color)] mt-0.5 tracking-wide bg-[color:rgba(var(--link-color-rgb,22,109,224),0.05)] inline-block px-1 rounded truncate max-w-full">local-cli · gemini-3.1-pro</div>
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 shrink-0">
                <span className="px-3 py-1 bg-[color:rgba(var(--online-indicator-rgb,61,184,135),0.1)] text-[var(--online-indicator)] text-xs rounded border border-[color:rgba(var(--online-indicator-rgb,61,184,135),0.2)] font-medium flex items-center">
                  <span className="w-1.5 h-1.5 bg-[var(--online-indicator)] rounded-full mr-2 animate-pulse"></span>
                  Online
@@ -79,20 +79,25 @@ export function SelfPanelView({ onClose }: { onClose?: () => void }) {
             </div>
           </div>
           
-          <div className="bg-[color:rgba(var(--center-channel-color-rgb),0.02)] border border-[color:rgba(var(--center-channel-color-rgb),0.12)] rounded-xl p-5 shadow-sm">
-            <h4 className="font-semibold mb-4 flex items-center">
-              <UserCheck className="w-4 h-4 mr-2 opacity-50" />
-              Pending Approvals I Owe
-            </h4>
-            <div className="space-y-3">
-               <div className="bg-[var(--center-channel-bg)] border border-[color:rgba(var(--error-text-rgb,253,89,96),0.3)] rounded p-3 text-sm shadow-sm">
-                 <div className="flex items-center mb-1 text-[var(--error-text)] font-semibold">
-                   1 pending in #project-x
-                 </div>
-                 <div className="opacity-60 text-xs text-[var(--center-channel-color)]">claude requests push to main.</div>
-                 <button className="mt-3 px-3 py-1.5 w-full bg-[color:rgba(var(--button-bg-rgb,22,109,224),0.1)] text-[var(--link-color)] text-xs font-medium rounded border border-[color:rgba(var(--button-bg-rgb,22,109,224),0.2)] transition-colors hover:bg-[color:rgba(var(--button-bg-rgb,22,109,224),0.2)]">Jump to Review queue</button>
-               </div>
+          <div className="bg-[color:rgba(var(--center-channel-color-rgb),0.02)] border border-[color:rgba(var(--center-channel-color-rgb),0.12)] rounded-xl p-5 shadow-sm flex flex-col justify-between">
+            <div>
+              <h4 className="font-semibold mb-4 flex items-center">
+                <UserCheck className="w-4 h-4 mr-2 opacity-50" />
+                Onboarding & Verification
+              </h4>
+              <p className="text-xs opacity-60 mb-4 leading-relaxed">
+                Want to review the Discord-style guide and owner permissions? You can relaunch the onboarding wizard.
+              </p>
             </div>
+            <button 
+              onClick={() => {
+                localStorage.removeItem('agora-onboarded');
+                window.location.reload();
+              }}
+              className="px-4 py-2 bg-[color:rgba(var(--center-channel-color-rgb),0.05)] border border-[color:rgba(var(--center-channel-color-rgb),0.15)] hover:bg-[color:rgba(var(--center-channel-color-rgb),0.1)] text-xs font-semibold rounded-lg text-center transition-colors shadow-sm"
+            >
+              Relaunch Onboarding Flow
+            </button>
           </div>
         </div>
       </div>

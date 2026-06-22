@@ -2,18 +2,22 @@ import { useState } from 'react';
 import { AppTab } from '../types';
 import { CodespaceView } from './CodespaceView';
 import { WorkspaceContextView } from './WorkspaceContextView';
-import { Hash, Code2, MessageSquare, X } from 'lucide-react';
+import { Menu, Hash, Code2, MessageSquare, X } from 'lucide-react';
 
 export function MainWorkspace({ 
   tabs, 
   activeTabId, 
   onSelectTab, 
-  onCloseTab 
+  onCloseTab,
+  onMenuToggle,
+  onOpenThread
 }: { 
   tabs: AppTab[];
   activeTabId: string;
   onSelectTab: (id: string) => void;
   onCloseTab: (id: string) => void;
+  onMenuToggle?: () => void;
+  onOpenThread?: (threadId: string) => void;
 }) {
   const activeTab = tabs.find(t => t.id === activeTabId) || tabs[0];
 
@@ -27,8 +31,8 @@ export function MainWorkspace({
 
   const renderContent = (tab: AppTab) => {
     switch (tab.type) {
-      case 'channel': return <WorkspaceContextView channelLabel={tab.label} />;
-      case 'codespace': return <CodespaceView />;
+      case 'channel': return <WorkspaceContextView channelLabel={tab.label} onMenuToggle={onMenuToggle} onOpenThread={onOpenThread} />;
+      case 'codespace': return <CodespaceView onMenuToggle={onMenuToggle} />;
       default: return <div className="p-8 text-[var(--center-channel-color)]">[{tab.label} session]</div>;
     }
   };
@@ -38,6 +42,12 @@ export function MainWorkspace({
       {/* Top Tab Bar focusing on Workspaces & Modes */}
        <div className="h-10 shrink-0 border-b border-[color:rgba(var(--center-channel-color-rgb),0.12)] bg-[color:rgba(var(--center-channel-color-rgb),0.02)] flex items-center justify-between pr-2">
         <div className="flex items-end h-full overflow-x-auto custom-scrollbar no-scrollbar-y">
+          <button 
+            onClick={onMenuToggle} 
+            className="md:hidden flex items-center justify-center p-2 mb-1 mr-1 ml-2 rounded hover:bg-[color:rgba(var(--center-channel-color-rgb),0.1)] transition-colors opacity-70 hover:opacity-100"
+          >
+            <Menu className="w-4 h-4" />
+          </button>
           {tabs.map((tab) => {
             const isActive = tab.id === activeTabId;
             return (

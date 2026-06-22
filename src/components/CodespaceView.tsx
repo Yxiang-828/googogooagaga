@@ -5,14 +5,14 @@ export function CodespaceView() {
   const [activeFile, setActiveFile] = useState('auth.ts');
 
   return (
-    <div className="flex flex-col h-full bg-[var(--center-channel-bg)] text-[var(--center-channel-color)] relative">
+    <div className="flex flex-col h-full bg-[var(--center-channel-bg)] text-[var(--center-channel-color)] relative min-w-0">
       {/* Optional Read-Only Banner */}
-      <div className="h-6 bg-[color:rgba(var(--error-text-rgb,253,89,96),0.1)] border-b border-[color:rgba(var(--error-text-rgb,253,89,96),0.2)] text-[var(--error-text)] text-[10px] uppercase font-bold flex items-center justify-center tracking-widest shrink-0">
+      <div className="py-1 min-h-[24px] bg-[color:rgba(var(--error-text-rgb,253,89,96),0.1)] border-b border-[color:rgba(var(--error-text-rgb,253,89,96),0.2)] text-[var(--error-text)] text-[10px] uppercase font-bold flex items-center justify-center tracking-widest shrink-0 text-center px-4">
         Read-Only Mode: Host rules deny manual edits to this project branch
       </div>
       <div className="flex-1 flex overflow-hidden">
         {/* File Tree */}
-        <div className="w-60 border-r border-[color:rgba(var(--center-channel-color-rgb),0.12)] flex flex-col pt-3 pb-2 z-10 shrink-0 bg-[color:rgba(var(--center-channel-color-rgb),0.02)]">
+        <div className="hidden md:flex w-60 border-r border-[color:rgba(var(--center-channel-color-rgb),0.12)] flex-col pt-3 pb-2 z-10 shrink-0 bg-[color:rgba(var(--center-channel-color-rgb),0.02)]">
            <div className="px-4 mb-3 flex items-center justify-between text-xs font-semibold uppercase tracking-wider opacity-60">
              <div className="flex items-center">
                <FolderTree className="w-3.5 h-3.5 mr-1.5" />

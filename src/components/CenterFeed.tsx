@@ -1,5 +1,6 @@
-import { Hash, Sparkles, Check, Play, ShieldCheck, Send, GitCommit, FileCode2, Clock, XCircle } from 'lucide-react';
+import { Hash, Sparkles, Check, Play, ShieldCheck, Send, GitCommit, FileCode2, Clock, XCircle, MessageSquare } from 'lucide-react';
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
+import { AgoraActionCard, ActionData } from './AgoraActionCard';
 
 type Message = {
   id: string;
@@ -12,23 +13,28 @@ type Message = {
   from?: string;
   to?: string;
   fileChanges?: { name: string; added: number; removed: number; authorBadge: string; authorColor: string; }[];
+  actionData?: ActionData;
 };
 
-export function CenterFeed({ activeChannel }: { activeChannel: string }) {
+export function CenterFeed({ activeChannel, onOpenThread }: { activeChannel: string, onOpenThread?: (threadId: string) => void }) {
   const [messagesByChannel, setMessagesByChannel] = useState<Record<string, Message[]>>({
     'project-x': [
       { id: '1', type: 'human', author: 'ana', time: '10:40 AM', content: '@claude wire up auth' },
       { 
         id: '2', 
         type: 'agent-action', 
-        agent: 'claude-opus-4', 
-        time: '2.1s', 
-        details: 'wrote 3 files → codespace',
-        fileChanges: [
-          { name: 'src/auth.ts', added: 42, removed: 0, authorBadge: 'C', authorColor: 'bg-[var(--online-indicator)] text-white' },
-          { name: 'package.json', added: 2, removed: 1, authorBadge: 'C', authorColor: 'bg-[var(--online-indicator)] text-white' },
-          { name: 'src/types.ts', added: 15, removed: 0, authorBadge: 'C', authorColor: 'bg-[var(--online-indicator)] text-white' }
-        ]
+        agent: 'claude', 
+        time: '10:41 AM', 
+        actionData: {
+          title: 'Wired up authentication',
+          status: 'done',
+          summary: 'Installed dependencies and configured Supabase client using environment variables.',
+          subactions: [
+            { label: 'npm install @supabase/supabase-js', tool: 'shell', status: 'done', duration_ms: 1250 },
+            { label: 'Create src/lib/supabase.ts', tool: 'edit_file', status: 'done', result: 'Successfully wrote file.', duration_ms: 45 },
+            { label: 'npm run check', tool: 'shell', status: 'done', result: 'All checks passed', duration_ms: 800 }
+          ]
+        }
       },
       { id: '3', type: 'delegation', from: 'claude', to: 'codex', time: '10:41 AM', content: "need the /me endpoint first, I'm blocked until the API layer provides it." },
       {
@@ -47,6 +53,49 @@ export function CenterFeed({ activeChannel }: { activeChannel: string }) {
         time: '10:47 AM',
         agent: 'claude',
         content: 'wants to push to main + plan: deploy auth branch'
+      }
+    ],
+    'ci-cd-pipeline': [
+      { id: 'c1', type: 'human', author: 'system', time: '11:02 AM', content: 'Commit `feat: user profile` by @ana pushed to `main`' },
+      { 
+        id: 'c2', 
+        type: 'agent-action', 
+        agent: 'ci-bot', 
+        time: '11:03 AM', 
+        actionData: {
+          title: 'Running test suite on main',
+          status: 'error',
+          summary: '2 tests failed in /src/components/Profile.test.tsx',
+          subactions: [
+            { label: 'npm install', tool: 'shell', status: 'done', duration_ms: 14500 },
+            { label: 'npm run lint', tool: 'shell', status: 'done', duration_ms: 1200 },
+            { label: 'npm run test', tool: 'shell', status: 'error', result: 'FAIL src/components/Profile.test.tsx\n  ✕ renders user data (12 ms)\n  ✕ handles null avatar (8 ms)\n\nError: render is not a function', duration_ms: 3400 }
+          ]
+        }
+      },
+      { id: 'c3', type: 'human', author: 'ci-bot', time: '11:04 AM', content: '🚨 @ana Build failed on your recent commit. Tests are failing because `render` is being called incorrectly in the testing suite. I can write a fix and propose it to the workspace if you like.' },
+      { id: 'c4', type: 'human', author: 'ana', time: '11:15 AM', content: 'Yes please @ci-bot, go ahead and fix the test suite.' },
+      { 
+        id: 'c5', 
+        type: 'agent-action', 
+        agent: 'ci-bot', 
+        time: '11:16 AM', 
+        actionData: {
+          title: 'Fixing test suite',
+          status: 'done',
+          summary: 'Fixed testing imports in Profile.test.tsx and re-ran test suite.',
+          subactions: [
+            { label: 'Edit src/components/Profile.test.tsx', tool: 'edit_file', status: 'done', result: 'Fixed missing imports from @testing-library/react', duration_ms: 800 },
+            { label: 'npm run test', tool: 'shell', status: 'done', result: 'PASS src/components/Profile.test.tsx\nTest Suites: 1 passed, 1 total', duration_ms: 2100 }
+          ]
+        }
+      },
+      {
+        id: 'c6',
+        type: 'approval-request',
+        time: '11:17 AM',
+        agent: 'ci-bot',
+        content: 'wants to commit fix "test: fix missing bounding in Profile tests" to `main`'
       }
     ]
   });
@@ -94,15 +143,15 @@ export function CenterFeed({ activeChannel }: { activeChannel: string }) {
         )}
         
         {messages.map(msg => (
-          <div key={msg.id} className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div key={msg.id} className="animate-in fade-in slide-in-from-bottom-2 duration-300 relative group pr-12">
             {msg.type === 'human' && (
-              <div className="flex text-sm group">
+              <div className="flex text-sm">
                 <div className="w-10 flex-shrink-0 flex justify-center mt-1 pt-1">
                   <div className={`w-8 h-8 rounded flex items-center justify-center font-medium shadow-sm ring-1 ring-black/10 ${msg.author === 'you' ? 'bg-[var(--button-bg)] text-[var(--button-color)]' : 'bg-[color:rgba(var(--center-channel-color-rgb),0.1)]'}`}>
                     {msg.author?.substring(0,2).toUpperCase()}
                   </div>
                 </div>
-                <div>
+                <div className="flex-1">
                   <div className="flex items-baseline space-x-2">
                     <span className="font-bold hover:underline cursor-pointer">{msg.author}</span>
                     <span className="text-[11px] opacity-60 font-medium">{msg.time}</span>
@@ -110,6 +159,18 @@ export function CenterFeed({ activeChannel }: { activeChannel: string }) {
                   <div className="opacity-90 mt-1 whitespace-pre-wrap leading-relaxed">
                     {msg.content?.split(' ').map((word, i) => word.startsWith('@') ? <span key={i} className="bg-[var(--mention-bg)] text-[var(--mention-color)] px-1.5 py-0.5 rounded font-medium mr-1">{word}</span> : word + ' ')}
                   </div>
+                  {msg.id === '1' && (
+                    <div className="mt-2 flex items-center">
+                      <button 
+                         onClick={() => onOpenThread && onOpenThread(msg.id)} 
+                         className="flex items-center text-[11px] font-semibold text-[color:var(--link-color)] hover:underline opacity-90 transition-all bg-[color:rgba(var(--link-color-rgb,22,109,224),0.05)] px-2 py-1 rounded"
+                      >
+                         <MessageSquare className="w-3 h-3 mr-1.5" />
+                         2 replies
+                      </button>
+                      <span className="text-[10px] opacity-50 ml-2">Last reply just now</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -146,55 +207,19 @@ export function CenterFeed({ activeChannel }: { activeChannel: string }) {
               </div>
             )}
 
-            {msg.type === 'agent-action' && (
+            {msg.type === 'agent-action' && msg.actionData && (
               <div className="flex text-sm mt-5">
                 <div className="w-10 flex-shrink-0 flex justify-center mt-1">
-                  <div className="w-8 h-8 rounded-full bg-[color:rgba(var(--online-indicator-rgb,61,184,135),0.1)] text-[var(--online-indicator)] flex items-center justify-center border border-[color:rgba(var(--online-indicator-rgb,61,184,135),0.2)] shadow-[0_0_10px_rgba(61,184,135,0.1)]">
-                    <Sparkles className="w-4 h-4" />
+                  <div className="w-8 h-8 rounded shrink-0 bg-[color:rgba(var(--online-indicator-rgb,61,184,135),0.1)] text-[var(--online-indicator)] flex items-center justify-center font-medium shadow-sm">
+                    {msg.agent?.charAt(0).toUpperCase()}
                   </div>
                 </div>
-                <div className="flex-1 max-w-2xl bg-[var(--center-channel-bg)] border border-[color:rgba(var(--center-channel-color-rgb),0.12)] rounded-xl overflow-hidden shadow-sm">
-                  <div className="px-4 py-2 border-b border-[color:rgba(var(--center-channel-color-rgb),0.12)] bg-[color:rgba(var(--center-channel-color-rgb),0.02)] flex items-center justify-between">
-                    <div className="flex items-center text-[var(--online-indicator)] font-semibold text-xs uppercase tracking-wider">
-                      <Play className="w-3 h-3 mr-1.5 fill-current" />
-                      Action Completed
-                    </div>
-                    <span className="text-xs opacity-50 font-mono">{msg.time}</span>
-                  </div>
-                  <div className="p-4 space-y-3">
-                    <div className="flex items-start">
-                      <Check className="w-4 h-4 opacity-50 mr-2 mt-0.5 shrink-0" />
-                      <span>ran <span className="font-mono text-xs bg-[color:rgba(var(--center-channel-color-rgb),0.1)] border border-[color:rgba(var(--center-channel-color-rgb),0.1)] px-1.5 py-0.5 rounded opacity-80 ml-1">{msg.agent}</span></span>
-                    </div>
-                    <div className="flex items-start">
-                      <Check className="w-4 h-4 text-[var(--online-indicator)] mr-2 mt-0.5 shrink-0" />
-                      <span dangerouslySetInnerHTML={{ __html: msg.details || '' }} />
-                    </div>
-                  </div>
-                  {msg.fileChanges && (
-                    <div className="bg-[color:rgba(var(--center-channel-color-rgb),0.02)] border-t border-[color:rgba(var(--center-channel-color-rgb),0.12)] p-4 font-mono text-[11px]">
-                      <div className="opacity-60 font-semibold uppercase tracking-wider mb-2 text-[10px]">Changes Log Tree</div>
-                      <div className="space-y-2">
-                        {msg.fileChanges.map((change, i) => (
-                           <div key={i} className="flex items-center justify-between group">
-                              <div className="flex items-center">
-                                <div className="flex -space-x-1 shrink-0 mr-2 opacity-80 group-hover:opacity-100">
-                                   <span className={`w-4 h-4 flex items-center justify-center rounded-full border border-[var(--center-channel-bg)] ${change.authorColor} text-[9px] font-bold shadow-sm`}>
-                                     {change.authorBadge}
-                                   </span>
-                                </div>
-                                <FileCode2 className="w-3.5 h-3.5 opacity-50 mr-1.5" />
-                                <span className="hover:text-[var(--link-color)] cursor-pointer underline decoration-dashed opacity-80 hover:opacity-100 transition-colors">{change.name}</span>
-                              </div>
-                              <div className="flex items-center space-x-2 font-mono">
-                                 {change.added > 0 && <span className="text-[var(--online-indicator)]">+{change.added}</span>}
-                                 {change.removed > 0 && <span className="text-[var(--error-text)]">-{change.removed}</span>}
-                              </div>
-                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                <div className="flex-1 pr-12">
+                   <div className="flex items-baseline space-x-2 mb-1">
+                       <span className="font-bold cursor-pointer text-[var(--online-indicator)] hover:underline">{msg.agent}</span>
+                       <span className="text-[11px] opacity-60 font-medium">{msg.time}</span>
+                   </div>
+                   <AgoraActionCard action={msg.actionData} />
                 </div>
               </div>
             )}
@@ -264,6 +289,17 @@ export function CenterFeed({ activeChannel }: { activeChannel: string }) {
                 </div>
               </div>
             )}
+
+            {/* Universal Reply Button */}
+            <div className="absolute right-0 top-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button 
+                  onClick={() => onOpenThread && onOpenThread(msg.id)} 
+                  className="p-1.5 rounded bg-[var(--center-channel-bg)] border border-[color:rgba(var(--center-channel-color-rgb),0.12)] shadow-sm hover:text-[var(--link-color)]"
+                  title="Reply to thread"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                </button>
+            </div>
           </div>
         ))}
         <div ref={endOfMessagesRef} className="h-4" />

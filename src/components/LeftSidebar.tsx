@@ -14,7 +14,8 @@ import {
   FolderArchive,
   ChevronDown,
   LayoutDashboard,
-  MessageSquare
+  MessageSquare,
+  Home
 } from 'lucide-react';
 import { AppTab, OverlayType, RosterMember } from '../types';
 
@@ -124,8 +125,16 @@ export function LeftSidebar({
 
       <div className="flex-1 overflow-y-auto custom-scrollbar overflow-x-hidden">
         <NavGroup title="Main">
+          <ActionItem label="Welcome / Guide" icon={Home} onClick={() => onOpenOverlay('home')} />
           <ActionItem label="Me (Self Panel)" icon={KeySquare} onClick={() => onOpenOverlay('self')} />
           <ActionItem label="Connect AI" icon={LayoutDashboard} onClick={() => onOpenOverlay('connect')} />
+          <ActionItem label="Active Skills" icon={Activity} onClick={() => onOpenOverlay('skills')} />
+          <ActionItem label="Shared Dictionary" icon={BrainCircuit} onClick={() => onOpenOverlay('archive')} />
+        </NavGroup>
+
+        <NavGroup title="Agent Workflows">
+          <NavItem id="chat-ci-cd-pipeline" icon={Hash} label="ci-cd-pipeline" indicatorCode="working" />
+          <NavItem id="chat-ops-alerts" icon={Hash} label="ops-alerts" />
         </NavGroup>
 
         <NavGroup title="Shared Workspaces">
