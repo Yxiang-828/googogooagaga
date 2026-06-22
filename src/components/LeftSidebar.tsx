@@ -13,9 +13,10 @@ import {
   Database,
   FolderArchive,
   ChevronDown,
-  LayoutDashboard
+  LayoutDashboard,
+  MessageSquare
 } from 'lucide-react';
-import { AppTab, RosterMember } from '../types';
+import { AppTab, OverlayType, RosterMember } from '../types';
 
 const ROSTER: RosterMember[] = [
   { id: 'u1', name: 'ana', type: 'human', status: 'online' },
@@ -29,14 +30,16 @@ const ROSTER: RosterMember[] = [
 export function LeftSidebar({ 
   collapsed, 
   activeTabId, 
-  onSelectTab 
+  onSelectTab,
+  onOpenOverlay
 }: { 
   collapsed: boolean;
   activeTabId: string;
   onSelectTab: (tab: Partial<AppTab>) => void;
+  onOpenOverlay: (overlay: OverlayType) => void;
 }) {
   
-  const NavItem = ({ icon: Icon, label, type, id, indicatorCode }: { icon: React.ElementType, label: string, type: AppTab['type'], id: string, indicatorCode?: string }) => {
+  const NavItem = ({ icon: Icon, label, id, indicatorCode, type = 'channel' }: { icon: React.ElementType, label: string, id: string, indicatorCode?: string, type?: AppTab['type'] }) => {
     const isActive = activeTabId === id;
     
     if (collapsed) {
@@ -59,10 +62,10 @@ export function LeftSidebar({
     return (
       <button 
         onClick={() => onSelectTab({ id, type, label })}
-        className={`w-[calc(100%-1rem)] flex items-center px-3 py-1.5 text-sm rounded mx-2 transition-colors mb-0.5 ${
+        className={`w-[calc(100%-1rem)] flex items-center px-3 py-1.5 text-sm rounded mx-2 transition-colors mb-0.5 border-l-4 ${
           isActive 
-            ? 'bg-gray-800 text-gray-100 border-l-4 border-blue-500 pl-2' 
-            : 'border-l-4 border-transparent pl-2 text-gray-400 hover:bg-gray-800/50 hover:text-gray-200'
+            ? 'bg-gray-800 text-gray-100 border-blue-500 pl-2' 
+            : 'border-transparent pl-2 text-gray-400 hover:bg-gray-800/50 hover:text-gray-200'
         }`}>
         <Icon className="w-4 h-4 mr-2.5 opacity-70 shrink-0" />
         <span className="truncate text-left flex-1">{label}</span>
@@ -85,6 +88,22 @@ export function LeftSidebar({
     );
   };
 
+  const ActionItem = ({ icon: Icon, label, onClick }: { icon: React.ElementType, label: string, onClick: () => void }) => {
+    if (collapsed) {
+      return (
+        <button onClick={onClick} title={label} className="relative w-10 h-10 mb-2 flex items-center justify-center rounded-xl mx-auto text-gray-400 hover:bg-gray-800 hover:text-gray-200 transition-colors">
+          <Icon className="w-5 h-5 opacity-80" />
+        </button>
+      );
+    }
+    return (
+      <button onClick={onClick} className="w-[calc(100%-1rem)] flex items-center px-3 py-1.5 text-sm rounded mx-2 transition-colors mb-0.5 border-l-4 border-transparent pl-2 text-gray-400 hover:bg-gray-800/50 hover:text-gray-200">
+        <Icon className="w-4 h-4 mr-2.5 opacity-70 shrink-0" />
+        <span className="truncate text-left flex-1">{label}</span>
+      </button>
+    );
+  };
+
   // Group Roster by Humans
   const humans = ROSTER.filter(r => r.type === 'human');
   const getAgentsForOwner = (ownerName: string) => ROSTER.filter(r => r.type === 'agent' && r.owner === ownerName);
@@ -92,7 +111,7 @@ export function LeftSidebar({
   return (
     <div className={`${collapsed ? 'w-16' : 'w-64'} bg-[#0F1115] border-r border-gray-800 flex flex-col h-full flex-shrink-0 select-none transition-all duration-300 z-20`}>
       {/* Workspace Header */}
-      <div className={`h-14 flex items-center ${collapsed ? 'justify-center border-b border-gray-800/50' : 'px-5'} shrink-0 mb-4`}>
+      <div className={`h-14 flex items-center justify-center ${collapsed ? 'border-b border-gray-800/50' : 'justify-start px-5'} shrink-0 mb-4`}>
         {collapsed ? (
           <div className="w-8 h-8 rounded bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-sm shadow-blue-900/50">A</div>
         ) : (
@@ -105,14 +124,40 @@ export function LeftSidebar({
 
       <div className="flex-1 overflow-y-auto custom-scrollbar overflow-x-hidden">
         <NavGroup title="Main">
-          <NavItem id="self-panel" icon={KeySquare} label="Me (Self Panel)" type="self" />
-          <NavItem id="connect-panel" icon={LayoutDashboard} label="Connect AI" type="connect" />
+          <ActionItem label="Me (Self Panel)" icon={KeySquare} onClick={() => onOpenOverlay('self')} />
+          <ActionItem label="Connect AI" icon={LayoutDashboard} onClick={() => onOpenOverlay('connect')} />
         </NavGroup>
 
-        <NavGroup title="Channels">
-          <NavItem id="chat-project-x" icon={Hash} label="project-x" type="channel" indicatorCode="working" />
-          <NavItem id="chat-debug" icon={Cpu} label="debug" type="channel" indicatorCode="approval" />
-          <NavItem id="chat-web" icon={Hash} label="web" type="channel" />
+        <NavGroup title="Shared Workspaces">
+          <NavItem id="chat-project-x" icon={Hash} label="project-x" indicatorCode="working" />
+          {!collapsed && activeTabId === 'chat-project-x' && (
+            <div className="ml-8 mr-2 mb-3 mt-1 p-2 bg-[#1A1D24]/80 border border-gray-800 rounded shadow-inner text-[10px] text-gray-500 font-mono tracking-tight leading-tight relative">
+                <div className="absolute -left-3 top-2 w-3 h-[1px] bg-gray-800"></div>
+                <div className="text-gray-400 mb-1 font-semibold uppercase text-[9px] flex items-center"><Database className="w-2.5 h-2.5 mr-1" /> Bound Context</div>
+                <div className="flex items-center text-blue-400 mb-1.5 ml-1"><Hash className="w-3 h-3 mr-1 text-gray-600" /> codespace: web-app</div>
+                
+                <div className="text-gray-400 mb-1 font-semibold uppercase text-[9px] mt-2 flex items-center"><Activity className="w-2.5 h-2.5 mr-1" /> Residents</div>
+                <div className="flex items-center gap-1.5 ml-1">
+                   <div className="flex space-x-1">
+                     <span className="flex items-center px-1 py-0.5 bg-emerald-900/30 text-emerald-500 border border-emerald-800 rounded">
+                       <span className="w-3 h-3 bg-emerald-600 text-white rounded-full flex items-center justify-center text-[7px] font-bold mr-1">C</span>
+                       claude
+                     </span>
+                     <span className="flex items-center px-1 py-0.5 bg-purple-900/30 text-purple-500 border border-purple-800 rounded">
+                       <span className="w-3 h-3 bg-purple-600 text-white rounded-full flex items-center justify-center text-[7px] font-bold mr-1">E</span>
+                       codex
+                     </span>
+                   </div>
+                </div>
+            </div>
+          )}
+          <NavItem id="chat-debug" icon={Cpu} label="debug" indicatorCode="approval" />
+          <NavItem id="chat-web" icon={Hash} label="web" />
+        </NavGroup>
+
+        <NavGroup title="Direct Sessions">
+          <NavItem id="chat-agy" icon={MessageSquare} label="@agy (My Agent)" />
+          <NavItem id="chat-scratch" icon={MessageSquare} label="scratchpad" />
         </NavGroup>
 
         {!collapsed && (

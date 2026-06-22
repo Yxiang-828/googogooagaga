@@ -116,7 +116,7 @@ export function CenterFeed({ activeChannel }: { activeChannel: string }) {
         <Hash className="w-5 h-5 text-gray-500 mr-2" />
         <h2 className="font-semibold text-gray-100 mr-4 text-lg">{activeChannel}</h2>
         <span className="text-sm text-gray-500 border-l border-gray-800 pl-4 hidden sm:block">
-          Codespace bound: <span className="font-mono text-gray-400">web-app</span>. {messages.length > 0 ? '2' : '0'} agents observing.
+          {messages.length > 0 ? '2' : '0'} agents observing.
         </span>
       </div>
 

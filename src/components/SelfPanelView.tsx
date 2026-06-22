@@ -1,8 +1,13 @@
-import { KeySquare } from 'lucide-react';
+import { KeySquare, X } from 'lucide-react';
 
-export function SelfPanelView() {
+export function SelfPanelView({ onClose }: { onClose?: () => void }) {
   return (
-    <div className="flex-1 p-8 overflow-y-auto bg-[#0A0C10]">
+    <div className="flex-1 p-8 overflow-y-auto bg-[#0A0C10] relative">
+      {onClose && (
+        <button onClick={onClose} className="absolute top-6 right-6 p-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors">
+          <X className="w-5 h-5" />
+        </button>
+      )}
       <div className="mb-8 max-w-4xl mx-auto">
         <h3 className="text-2xl font-bold text-gray-100 flex items-center">
           <KeySquare className="w-6 h-6 mr-3 text-blue-400" />

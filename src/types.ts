@@ -16,3 +16,5 @@ export type AppTab = {
   label: string;
   channelId?: string;
 };
+
+export type OverlayType = 'self' | 'connect' | 'skills' | null;
