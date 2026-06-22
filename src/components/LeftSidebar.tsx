@@ -109,9 +109,9 @@ export function LeftSidebar({
   const getAgentsForOwner = (ownerName: string) => ROSTER.filter(r => r.type === 'agent' && r.owner === ownerName);
 
   return (
-    <div className={`${collapsed ? 'w-16' : 'w-64'} bg-[#0F1115] border-r border-gray-800 flex flex-col h-full flex-shrink-0 select-none transition-all duration-300 z-20`}>
+    <div className={`${collapsed ? 'w-16' : 'w-64'} bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] border-r border-[color:rgba(var(--center-channel-color-rgb),0.12)] flex flex-col h-full flex-shrink-0 select-none transition-all duration-300 z-20`}>
       {/* Workspace Header */}
-      <div className={`h-14 flex items-center justify-center ${collapsed ? 'border-b border-gray-800/50' : 'justify-start px-5'} shrink-0 mb-4`}>
+      <div className={`h-14 flex items-center justify-center ${collapsed ? 'border-b border-[color:rgba(var(--center-channel-color-rgb),0.06)]' : 'justify-start px-5'} shrink-0 mb-4`}>
         {collapsed ? (
           <div className="w-8 h-8 rounded bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-sm shadow-blue-900/50">A</div>
         ) : (
@@ -131,8 +131,8 @@ export function LeftSidebar({
         <NavGroup title="Shared Workspaces">
           <NavItem id="chat-project-x" icon={Hash} label="project-x" indicatorCode="working" />
           {!collapsed && activeTabId === 'chat-project-x' && (
-            <div className="ml-8 mr-2 mb-3 mt-1 p-2 bg-[#1A1D24]/80 border border-gray-800 rounded shadow-inner text-[10px] text-gray-500 font-mono tracking-tight leading-tight relative">
-                <div className="absolute -left-3 top-2 w-3 h-[1px] bg-gray-800"></div>
+            <div className="ml-8 mr-2 mb-3 mt-1 p-2 bg-[color:rgba(var(--center-channel-color-rgb),0.04)] border border-[color:rgba(var(--center-channel-color-rgb),0.12)] rounded shadow-inner text-[10px] text-[color:rgba(var(--center-channel-color-rgb),0.6)] font-mono tracking-tight leading-tight relative">
+                <div className="absolute -left-3 top-2 w-3 h-[1px] bg-[color:rgba(var(--center-channel-color-rgb),0.12)]"></div>
                 <div className="text-gray-400 mb-1 font-semibold uppercase text-[9px] flex items-center"><Database className="w-2.5 h-2.5 mr-1" /> Bound Context</div>
                 <div className="flex items-center text-blue-400 mb-1.5 ml-1"><Hash className="w-3 h-3 mr-1 text-gray-600" /> codespace: web-app</div>
                 
@@ -161,7 +161,7 @@ export function LeftSidebar({
         </NavGroup>
 
         {!collapsed && (
-          <div className="mt-6 border-t border-gray-800/50 pt-4">
+          <div className="mt-6 border-t border-[color:rgba(var(--center-channel-color-rgb),0.06)] pt-4">
             <div className="px-5 text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-2 flex items-center">
               <ChevronDown className="w-3 h-3 mr-1" />
               Connected Roster

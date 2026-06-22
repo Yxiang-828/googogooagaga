@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { LeftSidebar } from './components/LeftSidebar';
 import { MainWorkspace } from './components/MainWorkspace';
-import { AppSurface, OverlayType } from './types';
+import { AppTab, OverlayType } from './types';
 import { SelfPanelView } from './components/SelfPanelView';
 
 export default function App() {
@@ -31,7 +31,7 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#0A0C10] text-gray-100 font-sans">
+    <div className="flex h-screen w-full overflow-hidden bg-[var(--center-channel-bg)] text-[var(--center-channel-color)] font-sans">
       <div 
         className="h-full flex-shrink-0 transition-all duration-300 relative group z-30"
         onMouseEnter={() => sidebarCollapsed && setSidebarCollapsed(false)}
@@ -56,7 +56,7 @@ export default function App() {
       {activeOverlay && (
         <>
           <div className="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm" onClick={() => setActiveOverlay(null)}></div>
-          <div className="fixed top-0 right-0 h-full w-[800px] max-w-[90vw] bg-[#0A0C10] border-l border-gray-800 shadow-2xl z-50 flex flex-col transform transition-transform duration-300">
+          <div className="fixed top-0 right-0 h-full w-[800px] max-w-[90vw] bg-[var(--center-channel-bg)] border-l border-[color:rgba(var(--center-channel-color-rgb),0.12)] shadow-2xl z-50 flex flex-col transform transition-transform duration-300">
             {activeOverlay === 'self' && <SelfPanelView onClose={() => setActiveOverlay(null)} />}
             {activeOverlay === 'connect' && <div className="p-8"><h2 className="text-xl">Connect AI (Coming Soon)</h2></div>}
           </div>

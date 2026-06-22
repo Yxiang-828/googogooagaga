@@ -6,7 +6,26 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
-/* Custom Utilities for Scrollbars to match dark IDE feel */
+@layer base {
+  :root {
+    --center-channel-bg: #1e1e1e;
+    --center-channel-color: #dddddd;
+    --center-channel-color-rgb: 221, 221, 221;
+    --sidebar-bg: #111111;
+    --sidebar-text: #ffffff;
+    --button-bg: #166de0;
+    --button-color: #ffffff;
+    --link-color: #5d89ea;
+    --mention-bg: rgba(22, 109, 224, 0.3);
+    --mention-color: #5d89ea;
+    --online-indicator: #3db887;
+    --away-indicator: #ffbc42;
+    --dnd-indicator: #f74343;
+    --error-text: #fd5960;
+  }
+}
+
+/* Custom Utilities for Scrollbars matches channel */
 @layer utilities {
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
@@ -16,10 +35,14 @@
     background: transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #374151; /* gray-700 */
+    background-color: rgba(var(--center-channel-color-rgb), 0.15);
     border-radius: 20px;
   }
   .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-    background-color: #4B5563; /* gray-600 */
+    background-color: rgba(var(--center-channel-color-rgb), 0.25);
+  }
+  
+  .no-scrollbar-y::-webkit-scrollbar {
+      display: none;
   }
 }
